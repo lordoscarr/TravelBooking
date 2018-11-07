@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar filterToolbar = findViewById(R.id.filterToolbar);
         setSupportActionBar(filterToolbar);
 
-        testButton = findViewById(R.id.testButton);
+        //testButton = findViewById(R.id.testButton);
 
         database = new Database();
         database.start();
