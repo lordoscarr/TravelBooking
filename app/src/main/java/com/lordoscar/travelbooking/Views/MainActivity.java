@@ -13,7 +13,11 @@ import android.view.View;
 import android.widget.Button;
 
 import com.lordoscar.travelbooking.Helpers.Database;
+import com.lordoscar.travelbooking.Models.City;
+import com.lordoscar.travelbooking.Models.Trip;
 import com.lordoscar.travelbooking.R;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,7 +38,12 @@ public class MainActivity extends AppCompatActivity {
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getSharedPreferences("com.lordoscar.p1", Context.MODE_PRIVATE).edit().clear().commit();
+                //getSharedPreferences("com.lordoscar.p1", Context.MODE_PRIVATE).edit().clear().commit();
+                ArrayList<Trip> trips = database.getTrips();
+
+                for(Trip trip : trips){
+                    Log.d("TRIP", trip.toString() );
+                }
             }
         });
 

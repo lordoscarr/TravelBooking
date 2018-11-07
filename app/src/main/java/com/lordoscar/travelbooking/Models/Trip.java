@@ -26,6 +26,6 @@ public class Trip {
     }
 
     public String toString(){
-        return "Trip: " + origin + " ->" + destination;
+        return "Trip: " + origin + " -> " + destination;
     }
 }

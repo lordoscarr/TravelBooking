@@ -4,6 +4,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.lordoscar.travelbooking.Models.City;
+import com.lordoscar.travelbooking.Models.Trip;
+
 import org.postgresql.replication.PGReplicationConnectionImpl;
 
 import java.sql.Connection;
@@ -11,6 +14,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Database extends Thread{
 
@@ -102,21 +106,64 @@ public class Database extends Thread{
         }
     }
 
-    private class GetCities extends AsyncTask<String, Void, ArrayList<String>> {
+    public HashMap<Integer, City> getCities(){
+        try {
+            return new GetCities().execute().get();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return new HashMap<Integer, City>();
+        }
+    }
+
+    private class GetCities extends AsyncTask<String, Void, HashMap<Integer, City>> {
         @Override
-        protected ArrayList<String> doInBackground(String... params) {
-            ArrayList<String> drivers = new ArrayList<>();
+        protected HashMap<Integer, City> doInBackground(String... params) {
+            HashMap<Integer, City> cities = new HashMap<>();
             try{
                 PreparedStatement stmt = connection.
-                        prepareStatement("select * from driver");
+                        prepareStatement("select * from city");
                 ResultSet rs = stmt.executeQuery();
                 while (rs.next()){
-                    drivers.add("Driver: " + rs.getString("name") + ", " + rs.getString("phone"));
+                    City city = new City(Integer.parseInt(rs.getString("id")), rs.getString("name"), rs.getString("country"), rs.getString("stationaddress"));
+                    cities.put(city.getId(), city);
                 }
             }catch (Exception ex){
                 ex.printStackTrace();
             }
-            return drivers;
+            return cities;
+        }
+    }
+
+    public ArrayList<Trip> getTrips(){
+        try {
+            return new GetTrips().execute(getCities()).get();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return new ArrayList<Trip>();
+        }
+    }
+
+    private class GetTrips extends AsyncTask<HashMap<Integer, City>, Void, ArrayList<Trip>> {
+        @Override
+        protected ArrayList<Trip> doInBackground(HashMap<Integer, City>... params) {
+            HashMap<Integer, City> cities = params[0];
+            ArrayList<Trip> trips = new ArrayList<>();
+            try{
+                PreparedStatement stmt = connection.
+                        prepareStatement("select * from trip");
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()){
+                    int id = Integer.parseInt(rs.getString("id"));
+                    int origin = Integer.parseInt(rs.getString("origin"));
+                    int destination = Integer.parseInt(rs.getString("destination"));
+                    Trip trip = new Trip(id, cities.get(origin), cities.get(destination));
+                    Log.d("TRIP", trip.toString());
+                    trips.add(trip);
+                }
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+            return trips;
         }
     }
 }
