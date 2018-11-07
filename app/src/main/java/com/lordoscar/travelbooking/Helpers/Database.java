@@ -1,8 +1,10 @@
-package com.lordoscar.travelbooking;
+package com.lordoscar.travelbooking.Helpers;
 
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+
+import org.postgresql.replication.PGReplicationConnectionImpl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -40,7 +42,9 @@ public class Database extends Thread{
 
     public int registerTraveler(String name, String address, String email, String phone){
         try {
-            return new RegisterUser().execute(name, address, email, phone).get();
+            int id = new RegisterUser().execute(name, address, email, phone).get();
+            Log.d("REGISTER ID TO RETURN", id + "");
+            return id;
         }catch (Exception ex){
             return -1;
         }
@@ -81,6 +85,24 @@ public class Database extends Thread{
     }
 
     private class GetDrivers extends AsyncTask<String, Void, ArrayList<String>> {
+        @Override
+        protected ArrayList<String> doInBackground(String... params) {
+            ArrayList<String> drivers = new ArrayList<>();
+            try{
+                PreparedStatement stmt = connection.
+                        prepareStatement("select * from driver");
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()){
+                    drivers.add("Driver: " + rs.getString("name") + ", " + rs.getString("phone"));
+                }
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+            return drivers;
+        }
+    }
+
+    private class GetCities extends AsyncTask<String, Void, ArrayList<String>> {
         @Override
         protected ArrayList<String> doInBackground(String... params) {
             ArrayList<String> drivers = new ArrayList<>();
