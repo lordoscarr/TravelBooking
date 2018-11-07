@@ -11,9 +11,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.lordoscar.travelbooking.Helpers.Database;
-import com.lordoscar.travelbooking.Models.City;
+import com.lordoscar.travelbooking.Helpers.TripAdapter;
 import com.lordoscar.travelbooking.Models.Trip;
 import com.lordoscar.travelbooking.R;
 
@@ -24,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private Database database;
     private Button testButton;
     private int id = -1;
-    private Register registerFragment;
+    private RegisterFragment registerFragment;
+    private ListView tripListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +37,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(filterToolbar);
 
         testButton = findViewById(R.id.testButton);
+        tripListView = findViewById(R.id.tripListView);
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //getSharedPreferences("com.lordoscar.p1", Context.MODE_PRIVATE).edit().clear().commit();
                 ArrayList<Trip> trips = database.getTrips();
 
-                for(Trip trip : trips){
-                    Log.d("TRIP", trip.toString() );
-                }
+                tripListView.setAdapter(new TripAdapter(getBaseContext(), R.layout.trip_list_item, trips));
             }
         });
 
@@ -60,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
             if(firststart){
                 Log.d("First start", "First start!");
                 FragmentManager fm = getSupportFragmentManager();
-                registerFragment = new Register();
-                registerFragment.show(fm, "Register");
+                registerFragment = new RegisterFragment();
+                registerFragment.show(fm, "RegisterFragment");
             }else{
                 //Get user id from shared preferences
                 id = preferences.getInt("travelerId", -1);

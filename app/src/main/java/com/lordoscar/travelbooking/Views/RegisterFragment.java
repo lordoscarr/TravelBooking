@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.lordoscar.travelbooking.R;
 
 
-public class Register extends DialogFragment {
+public class RegisterFragment extends DialogFragment {
     private EditText editTextName, editTextLastname, editTextAddress, editTextPhone, editTextMail;
     private Button btnRegister;
 
