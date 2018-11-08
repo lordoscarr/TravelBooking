@@ -3,18 +3,21 @@ package com.lordoscar.travelbooking.Helpers;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.lordoscar.travelbooking.Models.Trip;
 import com.lordoscar.travelbooking.R;
+import com.lordoscar.travelbooking.Views.MainActivity;
 
 import java.util.List;
 
-public class TripAdapter extends ArrayAdapter<Trip> {
+public class TripAdapter extends ArrayAdapter<Trip> implements AdapterView.OnItemClickListener {
     public TripAdapter(@NonNull Context context, int resource, @NonNull List objects) {
         super(context, resource, objects);
     }
@@ -40,5 +43,10 @@ public class TripAdapter extends ArrayAdapter<Trip> {
         destinationCountry.setText(trip.getDestination().getCountry());
 
         return convertView;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        ((MainActivity) getContext()).openSchedule(getItem(i));
     }
 }

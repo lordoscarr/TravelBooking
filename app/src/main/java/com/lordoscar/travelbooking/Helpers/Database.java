@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.lordoscar.travelbooking.Models.Booking;
 import com.lordoscar.travelbooking.Models.City;
 import com.lordoscar.travelbooking.Models.ScheduledTrip;
 import com.lordoscar.travelbooking.Models.Trip;
@@ -205,6 +206,39 @@ public class Database extends Thread{
                 ex.printStackTrace();
             }
             return scheduledTrips;
+        }
+    }
+
+    public boolean bookTrip(Booking booking){
+        try {
+            return new BookTrip().execute(booking).get();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    private class BookTrip extends AsyncTask<Booking, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Booking... params) {
+            try{
+                Booking booking = params[0];
+                //Update amount of free seats
+                int freeSeats = booking.getTrip().getFreeSeats() - booking.getSeats();
+
+                PreparedStatement stmt = connection.prepareStatement("update scheduledtrip set freeseats = " + freeSeats +
+                        " where (id = " + booking.getTrip().getId() + ");");
+                stmt.executeUpdate();
+
+                //Add booking to table
+                stmt = connection.prepareStatement("insert into booking (traveler, scheduledtrip, seats) " +
+                        "values (" + booking.getId() + ", " + booking.getTrip().getId() + ", " + booking.getSeats() + ");");
+                stmt.executeUpdate();
+                return true;
+            }catch (Exception ex){
+                ex.printStackTrace();
+                return false;
+            }
         }
     }
 }

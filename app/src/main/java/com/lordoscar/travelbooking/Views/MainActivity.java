@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.lordoscar.travelbooking.Helpers.Database;
 import com.lordoscar.travelbooking.Helpers.TripAdapter;
+import com.lordoscar.travelbooking.Models.Booking;
 import com.lordoscar.travelbooking.Models.ScheduledTrip;
 import com.lordoscar.travelbooking.Models.Trip;
 import com.lordoscar.travelbooking.R;
@@ -28,7 +29,12 @@ public class MainActivity extends AppCompatActivity {
     private Button testButton;
     private int id = -1;
     private RegisterFragment registerFragment;
+    private DetailFragment detailFragment;
+    private ScheduleFragment scheduleFragment;
     private ListView tripListView;
+
+    private Trip selectedTrip = null;
+    private ScheduledTrip selectedScheduledTrip = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +55,9 @@ public class MainActivity extends AppCompatActivity {
                 //getSharedPreferences("com.lordoscar.p1", Context.MODE_PRIVATE).edit().clear().commit();
                 ArrayList<Trip> trips = database.getTrips();
 
-                tripListView.setAdapter(new TripAdapter(getBaseContext(), R.layout.trip_list_item, trips));
+                TripAdapter tripAdapter = new TripAdapter(MainActivity.this, R.layout.trip_list_item, trips);
+                tripListView.setAdapter(tripAdapter);
+                tripListView.setOnItemClickListener(tripAdapter);
 
                 ArrayList<ScheduledTrip> scheduledTrips = database.getScheduledTrips(trips.get(0));
 
@@ -81,8 +89,44 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void openSchedule(Trip trip){
+        selectedTrip = trip;
+        FragmentManager fm = getSupportFragmentManager();
+        scheduleFragment = new ScheduleFragment();
+        scheduleFragment.show(fm, "ScheduleFragment");
+    }
+
+    public ArrayList<ScheduledTrip> getSchedule(){
+        return database.getScheduledTrips(selectedTrip);
+    }
+
+    public void openDetail(ScheduledTrip scheduledTrip){
+        selectedScheduledTrip = scheduledTrip;
+        FragmentManager fm = getSupportFragmentManager();
+        detailFragment = new DetailFragment();
+        detailFragment.show(fm, "DetailFragment");
+    }
+
+    public ScheduledTrip getSelectedScheduledTrip(){
+        return selectedScheduledTrip;
+    }
+
     public int registerUser(String name, String address, String email, String phone){
         return database.registerTraveler(name,address,email,phone);
+    }
+
+    public boolean bookTrip(int seats){
+        Booking booking = new Booking(id, selectedScheduledTrip, seats);
+        return database.bookTrip(booking);
+    }
+
+    public void closeFragments(){
+        try {
+            scheduleFragment.dismiss();
+            detailFragment.dismiss();
+        }catch(Exception ex){
+
+        }
     }
 
     @Override

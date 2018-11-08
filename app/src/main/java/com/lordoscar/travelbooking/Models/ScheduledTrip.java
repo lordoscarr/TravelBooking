@@ -1,5 +1,8 @@
 package com.lordoscar.travelbooking.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.sql.Date;
 import java.sql.Timestamp;
 
@@ -52,5 +55,6 @@ public class ScheduledTrip {
 
     public String toString(){
         return trip + " which arrives on " + arrival.toString();
+
     }
 }
