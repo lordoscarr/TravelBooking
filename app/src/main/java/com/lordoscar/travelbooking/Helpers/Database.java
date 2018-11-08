@@ -5,14 +5,17 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.lordoscar.travelbooking.Models.City;
+import com.lordoscar.travelbooking.Models.ScheduledTrip;
 import com.lordoscar.travelbooking.Models.Trip;
 
 import org.postgresql.replication.PGReplicationConnectionImpl;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -164,6 +167,44 @@ public class Database extends Thread{
                 ex.printStackTrace();
             }
             return trips;
+        }
+    }
+
+    public ArrayList<ScheduledTrip> getScheduledTrips(Trip trip){
+        try {
+            return new GetScheduledTrips().execute(trip).get();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    private class GetScheduledTrips extends AsyncTask<Trip, Void, ArrayList<ScheduledTrip>> {
+        @Override
+        protected ArrayList<ScheduledTrip> doInBackground(Trip... params) {
+            Trip trip = params[0];
+            ArrayList<ScheduledTrip> scheduledTrips = new ArrayList<>();
+            try{
+                PreparedStatement stmt = connection.
+                        prepareStatement("select * from scheduledTrip where (trip = " + "'" + trip.getId() + "');");
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()){
+                    int id = Integer.parseInt(rs.getString("id"));
+                    Timestamp departure = rs.getTimestamp("departure");
+                    Timestamp arrival = rs.getTimestamp("arrival");
+                    int seats = Integer.parseInt(rs.getString("seats"));
+                    int freeSeats = Integer.parseInt(rs.getString("freeseats"));
+                    int price = Integer.parseInt(rs.getString("price"));
+
+                    ScheduledTrip scheduledTrip = new ScheduledTrip(id, departure, arrival, seats, freeSeats, price, trip);
+
+                    Log.d("SCHEDULED TRIP", trip.toString());
+                    scheduledTrips.add(scheduledTrip);
+                }
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+            return scheduledTrips;
         }
     }
 }

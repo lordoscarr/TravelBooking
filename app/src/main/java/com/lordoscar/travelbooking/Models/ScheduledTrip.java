@@ -1,17 +1,18 @@
 package com.lordoscar.travelbooking.Models;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 public class ScheduledTrip {
     private int id;
-    private Date departure;
-    private Date arrival;
+    private Timestamp departure;
+    private Timestamp arrival;
     private int seats;
     private int freeSeats;
     private int price;
     private Trip trip;
 
-    public ScheduledTrip(int id, Date departure, Date arrival, int seats, int freeSeats, int price, Trip trip) {
+    public ScheduledTrip(int id, Timestamp departure, Timestamp arrival, int seats, int freeSeats, int price, Trip trip) {
         this.id = id;
         this.departure = departure;
         this.arrival = arrival;
@@ -25,11 +26,11 @@ public class ScheduledTrip {
         return id;
     }
 
-    public Date getDeparture() {
+    public Timestamp getDeparture() {
         return departure;
     }
 
-    public Date getArrival() {
+    public Timestamp getArrival() {
         return arrival;
     }
 

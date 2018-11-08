@@ -15,9 +15,11 @@ import android.widget.ListView;
 
 import com.lordoscar.travelbooking.Helpers.Database;
 import com.lordoscar.travelbooking.Helpers.TripAdapter;
+import com.lordoscar.travelbooking.Models.ScheduledTrip;
 import com.lordoscar.travelbooking.Models.Trip;
 import com.lordoscar.travelbooking.R;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar filterToolbar = findViewById(R.id.filterToolbar);
         setSupportActionBar(filterToolbar);
 
+        database = new Database();
+        database.start();
+
         testButton = findViewById(R.id.testButton);
         tripListView = findViewById(R.id.tripListView);
         testButton.setOnClickListener(new View.OnClickListener() {
@@ -45,11 +50,16 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<Trip> trips = database.getTrips();
 
                 tripListView.setAdapter(new TripAdapter(getBaseContext(), R.layout.trip_list_item, trips));
+
+                ArrayList<ScheduledTrip> scheduledTrips = database.getScheduledTrips(trips.get(0));
+
+                for(ScheduledTrip trip : scheduledTrips){
+                    Log.d("Scheduled trip: ", trip.toString());
+                }
             }
         });
 
-        database = new Database();
-        database.start();
+
 
         Fragment fragment = null;
 
